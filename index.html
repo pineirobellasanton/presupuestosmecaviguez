@@ -1,49 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Mecaviguez · Presupuestos automáticos</title>
+  <meta charset="UTF-8">
+  <title>MECAVIGUEZ · Presupuestos automáticos</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f4f6f8;
       margin: 0;
-      padding: 0;
     }
 
     header {
       background: #0f172a;
       color: white;
-      padding: 20px;
+      padding: 25px;
       text-align: center;
-      font-size: 28px;
+      font-size: 32px;
       font-weight: bold;
       letter-spacing: 2px;
     }
 
     .container {
-      max-width: 700px;
-      margin: 30px auto;
+      max-width: 720px;
+      margin: 40px auto;
       background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     }
 
     h3 {
-      margin-top: 25px;
+      margin-top: 30px;
       color: #0f172a;
     }
 
     label {
       display: block;
-      margin-top: 12px;
+      margin-top: 15px;
       font-weight: bold;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin-top: 6px;
       border-radius: 6px;
       border: 1px solid #ccc;
@@ -51,14 +51,14 @@
     }
 
     button {
-      margin-top: 30px;
+      margin-top: 35px;
       width: 100%;
-      padding: 15px;
+      padding: 16px;
       background: #2563eb;
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 10px;
+      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -84,25 +84,31 @@
 <div class="container">
 
   <h3>📐 Planos</h3>
-  <label>Subir imágenes del plano</label>
-  <input type="file" id="planos" multiple />
+  <label>Subir plano(s)</label>
+  <input type="file" id="planos" multiple required>
 
-  <h3>🧱 Materiales</h3>
-  <label>Descripción del material</label>
-  <input type="text" id="materialDescripcion" placeholder="Ej: Aluminio 6061" />
-
+  <h3>🧱 Material</h3>
   <label>Precio del material (€)</label>
-  <input type="number" id="materialPrecio" step="0.01" />
+  <input type="number" id="materialPrecio" step="0.01" required>
 
-  <h3>🛠 Mano de obra</h3>
-  <label>Horas de trabajo</label>
-  <input type="number" id="horas" step="0.1" />
+  <h3>🛠 Máquina</h3>
+  <label>Seleccionar máquina</label>
+  <select id="maquina" required>
+    <option value="">-- Selecciona una máquina --</option>
+    <option value="CNC_3_EJES">CNC 3 ejes</option>
+    <option value="CNC_5_EJES">CNC 5 ejes</option>
+    <option value="TORNO_CNC">Torno CNC</option>
+    <option value="LASER">Corte láser</option>
+    <option value="AGUA">Corte por agua</option>
+  </select>
 
+  <h3>💶 Mano de obra</h3>
   <label>Precio por hora (€)</label>
-  <input type="number" id="precioHora" step="0.01" />
+  <input type="number" id="precioHora" step="0.01" required>
 
   <h3>📝 Datos adicionales</h3>
-  <textarea id="extras" rows="4" placeholder="Tolerancias, acabados, urgencia, etc."></textarea>
+  <textarea id="extras" rows="4"
+    placeholder="Tolerancias, acabados, urgencia, observaciones..."></textarea>
 
   <button onclick="enviarPresupuesto()">Calcular presupuesto</button>
 
@@ -114,29 +120,35 @@
 async function enviarPresupuesto() {
   const formData = new FormData();
 
-  // Archivos del plano
+  // Archivos
   const planosInput = document.getElementById("planos");
   for (const file of planosInput.files) {
     formData.append("planos", file);
   }
 
-  // Datos numéricos
+  // Datos
   formData.append("material_cost", document.getElementById("materialPrecio").value);
-  formData.append("machine_hours", document.getElementById("horas").value);
   formData.append("hourly_rate", document.getElementById("precioHora").value);
+  formData.append("machine", document.getElementById("maquina").value);
   formData.append("notes", document.getElementById("extras").value);
 
   const response = await fetch(
     "https://antonpb11.app.n8n.cloud/webhook-test/presupuesto",
     {
       method: "POST",
-      body: formData // 🔥 clave
+      body: formData
     }
   );
 
   const result = await response.json();
-  document.getElementById("resultado").innerHTML =
-    `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+
+  const resultadoDiv = document.getElementById("resultado");
+  resultadoDiv.style.display = "block";
+  resultadoDiv.innerHTML = `
+    💰 <strong>Presupuesto generado</strong><br><br>
+    Total estimado: <strong>${result.total_cost ?? "calculando..." } €</strong><br><br>
+    ${result.pdf_url ? `<a href="${result.pdf_url}" target="_blank">📄 Descargar PDF</a>` : ""}
+  `;
 }
 </script>
 
