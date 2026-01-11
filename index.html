@@ -5,17 +5,13 @@
   <title>MECAVIGUEZ · Presupuestos automáticos</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Segoe UI", Arial, sans-serif;
       background: #0a0f14;
       color: #e5e7eb;
     }
-
     header {
       background: linear-gradient(90deg, #020617, #020617);
       padding: 28px;
@@ -26,7 +22,6 @@
       color: #39ff14;
       border-bottom: 2px solid #39ff14;
     }
-
     .container {
       max-width: 760px;
       margin: 50px auto;
@@ -35,7 +30,6 @@
       border-radius: 16px;
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
     }
-
     h3 {
       margin-top: 40px;
       margin-bottom: 10px;
@@ -44,7 +38,6 @@
       border-bottom: 1px solid #1f2937;
       padding-bottom: 6px;
     }
-
     label {
       display: block;
       margin-top: 18px;
@@ -53,10 +46,7 @@
       font-size: 14px;
       color: #d1d5db;
     }
-
-    input,
-    textarea,
-    select {
+    input, textarea, select {
       width: 100%;
       padding: 12px 14px;
       border-radius: 8px;
@@ -65,24 +55,12 @@
       color: #e5e7eb;
       font-size: 14px;
     }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: #6b7280;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
+    input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: #39ff14;
       box-shadow: 0 0 0 1px #39ff14;
     }
-
-    textarea {
-      resize: vertical;
-    }
-
+    textarea { resize: vertical; }
     button {
       margin-top: 45px;
       width: 100%;
@@ -94,14 +72,7 @@
       cursor: pointer;
       background: linear-gradient(135deg, #39ff14, #22c55e);
       color: #020617;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
-
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 25px rgba(57, 255, 20, 0.35);
-    }
-
     .resultado {
       margin-top: 35px;
       padding: 22px;
@@ -111,20 +82,8 @@
       font-size: 16px;
       display: none;
     }
-
-    .resultado strong {
-      color: #39ff14;
-    }
-
-    a {
-      color: #39ff14;
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
+    .resultado strong { color: #39ff14; }
+    a { color: #39ff14; font-weight: 600; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -139,15 +98,14 @@
 
   <h3>Material</h3>
   <label>Material (especificación libre)</label>
-  <input
-    type="text"
-    id="materialTipo"
-    placeholder="Ej.: Acero inoxidable AISI 304"
-    required
-  >
+  <input type="text" id="materialTipo" placeholder="Ej.: Acero inoxidable AISI 304" required>
 
   <label>Coste estimado del material (€)</label>
   <input type="number" id="materialPrecio" step="0.01" required>
+
+  <h3>Cantidad</h3>
+  <label>Número de piezas</label>
+  <input type="number" id="cantidad" min="1" step="1" placeholder="Ej.: 10" required>
 
   <h3>Máquina</h3>
   <label>Seleccionar máquina</label>
@@ -165,11 +123,7 @@
   <input type="number" id="precioHora" step="0.01" required>
 
   <h3>Datos adicionales</h3>
-  <textarea
-    id="extras"
-    rows="4"
-    placeholder="Tolerancias, acabados, cantidad, urgencia, observaciones..."
-  ></textarea>
+  <textarea id="extras" rows="4" placeholder="Tolerancias, acabados, urgencia, observaciones..."></textarea>
 
   <button onclick="enviarPresupuesto()">Calcular presupuesto</button>
 
@@ -190,6 +144,7 @@ async function enviarPresupuesto() {
   formData.append("material_cost", document.getElementById("materialPrecio").value);
   formData.append("hourly_rate", document.getElementById("precioHora").value);
   formData.append("machine", document.getElementById("maquina").value);
+  formData.append("quantity", document.getElementById("cantidad").value);
   formData.append("notes", document.getElementById("extras").value);
 
   const response = await fetch(
