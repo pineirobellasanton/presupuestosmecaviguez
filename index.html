@@ -112,39 +112,31 @@
 
 <script>
 async function enviarPresupuesto() {
+  const formData = new FormData();
+
+  // Archivos del plano
   const planosInput = document.getElementById("planos");
-  const planos = Array.from(planosInput.files).map(f => f.name);
+  for (const file of planosInput.files) {
+    formData.append("planos", file);
+  }
 
-  const materialPrecio = Number(document.getElementById("materialPrecio").value);
-  const horas = Number(document.getElementById("horas").value);
-  const precioHora = Number(document.getElementById("precioHora").value);
-
-  const data = {
-    material_cost: materialPrecio,
-    machine_hours: horas,
-    hourly_rate: precioHora,
-    extra_costs: 0,
-    material_description: document.getElementById("materialDescripcion").value,
-    planos: planos,
-    notes: document.getElementById("extras").value
-  };
+  // Datos numéricos
+  formData.append("material_cost", document.getElementById("materialPrecio").value);
+  formData.append("machine_hours", document.getElementById("horas").value);
+  formData.append("hourly_rate", document.getElementById("precioHora").value);
+  formData.append("notes", document.getElementById("extras").value);
 
   const response = await fetch(
     "https://antonpb11.app.n8n.cloud/webhook-test/presupuesto",
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      body: formData // 🔥 clave
     }
   );
 
   const result = await response.json();
-
-  const resultadoDiv = document.getElementById("resultado");
-  resultadoDiv.style.display = "block";
-  resultadoDiv.innerHTML = `
-    💰 <strong>Presupuesto total:</strong> ${result.total_cost ?? result.total} €
-  `;
+  document.getElementById("resultado").innerHTML =
+    `<pre>${JSON.stringify(result, null, 2)}</pre>`;
 }
 </script>
 
