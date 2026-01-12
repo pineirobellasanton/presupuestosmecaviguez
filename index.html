@@ -148,7 +148,7 @@ async function enviarPresupuesto() {
   formData.append("notes", document.getElementById("extras").value);
 
   // 1️⃣ Enviar datos al webhook de inicio y obtener job_id
-  const inicioResp = await fetch("https://antonpb11.app.n8n.cloud/webhook-inicio", {
+  const inicioResp = await fetch("https://antonpb11.app.n8n.cloud/webhook-test/presupuesto", {
     method: "POST",
     body: formData
   });
