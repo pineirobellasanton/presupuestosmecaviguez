@@ -147,32 +147,22 @@ async function enviarPresupuesto() {
   formData.append("quantity", document.getElementById("cantidad").value);
   formData.append("notes", document.getElementById("extras").value);
 
-  // 1️⃣ Enviar datos al webhook de inicio y obtener job_id
-  const inicioResp = await fetch("https://antonpb11.app.n8n.cloud/webhook-test/presupuesto", {
-    method: "POST",
-    body: formData
-  });
-  const inicioJson = await inicioResp.json();
-  const jobId = inicioJson.job_id;
+  try {
+    const response = await fetch("https://antonpb11.app.n8n.cloud/webhook-test/presupuesto", {
+      method: "POST",
+      body: formData
+    });
 
-  // 2️⃣ Polling hasta que el PDF esté listo
-  let pdfReady = false;
-  let pdfUrl = "";
-  while (!pdfReady) {
-    await new Promise(r => setTimeout(r, 2000)); // esperar 2s
-    const statusResp = await fetch(`https://antonpb11.app.n8n.cloud/webhook-estado?job_id=${jobId}`);
-    const statusJson = await statusResp.json();
+    const result = await response.json();
 
-    if (statusJson.status === "ready") {
-      pdfReady = true;
-      pdfUrl = statusJson.pdf_url;
+    if(result.pdf_url) {
+      resultadoDiv.innerHTML = `<a href="${result.pdf_url}" target="_blank" download="presupuesto.pdf">Descargar PDF</a>`;
     } else {
-      resultadoDiv.innerHTML = "Calculando presupuesto…";
+      resultadoDiv.innerHTML = "Presupuesto generado pero no se recibió PDF. Revisa n8n.";
     }
+  } catch (err) {
+    resultadoDiv.innerHTML = "Error al enviar los datos: " + err;
   }
-
-  // 3️⃣ Mostrar link de descarga
-  resultadoDiv.innerHTML = `<a href="${pdfUrl}" target="_blank" download="presupuesto.pdf">Descargar PDF</a>`;
 }
 </script>
 
